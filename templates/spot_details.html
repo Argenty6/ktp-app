@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du Spot</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .row-half-screen {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .col-half {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+        #windSpeedChartstat, #windDirectionChart, #mapid {
+            width: 100%; /* Utiliser 100% de la largeur du parent */
+        }
+        #windSpeedChartstat {
+            height: 300px;
+        }
+        #windDirectionChart, #mapid {
+            height: 350px;
+        }
+
+        /* Media queries pour les tablettes et mobiles */
+        @media (max-width: 768px) {
+            .col-half {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-3">
+        <h1>Spot : {{ spot.spot }}</h1>
+        <p>Latitude : {{ spot.lat }}</p>
+        <p>Longitude : {{ spot.long }}</p>
+        <p>Pays : {{ spot.pays }}</p>
+
+        <!-- Première ligne avec le windSpeedChartstat et le texte -->
+        <div class="row-half-screen">
+            <div class="col-half">
+                <canvas id="windSpeedChartstat"></canvas>
+            </div>
+            <div class="col-half">
+              <form id="kiteQuiverForm" method="post" action="/spot/{{ spot_id }}">
+                <label for="month_of_departure">Quel est ton mois de départ ?</label>
+                <select id="month_of_departure" name="month_of_departure">
+                    <option value="1">Janvier</option>
+                    <option value="2">Février</option>
+                    <option value="3">Mars</option>
+                    <option value="4">Avril</option>
+                    <option value="5">Mai</option>
+                    <option value="6">Juin</option>
+                    <option value="7">Juillet</option>
+                    <option value="8">Août</option>
+                    <option value="9">Septembre</option>
+                    <option value="10">Octobre</option>
+                    <option value="11">Novembre</option>
+                    <option value="12">Décembre</option>
+                </select><br>
+                <label for="riderWeight">Quel est ton poids ?</label>
+                <input type="number" id="riderWeight" name="riderWeight"><br>
+
+                <input type="checkbox" id="customizeWindRange" name="customizeWindRange">
+                <label for="customizeWindRange">Je souhaite personnaliser mes plages de vent</label><br>
+
+                <div id="windRangeQuestions" style="display: none;">
+                    <p>Quelle taille de kite utilises-tu pour ces plages de vent ?</p>
+
+                    <label for="kite_12_16">12-16 noeuds:</label>
+                    <input type="text" id="kite_12_16" name="kite_size_12_16"><br>
+
+                    <label for="kite_17_21">17-21 noeuds:</label>
+                    <input type="text" id="kite_17_21" name="kite_size_17_21"><br>
+
+                    <label for="kite_22_27">22-27 noeuds:</label>
+                    <input type="text" id="kite_22_27" name="kite_size_22_27"><br>
+
+                    <label for="kite_28_33">28-33 noeuds:</label>
+                    <input type="text" id="kite_28_33" name="kite_size_28_33"><br>
+
+                    <label for="kite_34_40">34-40 noeuds:</label>
+                    <input type="text" id="kite_34_40" name="kite_size_34_40"><br>
+                </div>
+
+                <button type="submit">Calculer</button>
+            </form>
+    {% if recommendation %}
+    <p>{{ recommendation }}</p>
+    {% endif %}
+            </div>
+        </div>
+
+        <!-- Deuxième ligne avec windDirectionChart et mapid -->
+        <div class="row-half-screen">
+            <div class="col-half">
+                <canvas id="windDirectionChart"></canvas>
+            </div>
+            <div class="col-half">
+                <div id="mapid"></div>
+            </div>
+        </div>
+
+        <a href="/template" class="btn btn-primary mt-3">Retour à la liste des spots</a>
+    </div>
+
+<div id="chartImageContainer"></div>
+
+
+    <!-- JavaScript to initialize the map and charts -->
+    <script>
+        var mymap = L.map('mapid').setView([{{ spot.lat }}, {{ spot.long }}], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(mymap);
+        L.marker([{{ spot.lat }}, {{ spot.long }}]).addTo(mymap);
+
+        var ctxWindSpeed = document.getElementById('windSpeedChartstat').getContext('2d');
+        var data = {{ data | tojson | safe }};
+        new Chart(ctxWindSpeed, {
+            type: 'bar',
+            data: data,
+            options: {
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true, beginAtZero: true }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        var ctxWindDirection = document.getElementById('windDirectionChart').getContext('2d');
+        var polarData = {
+            labels: {{ direction_labels|tojson|safe }},
+            datasets: [{
+                data: {{ direction_data|tojson|safe }},
+                backgroundColor: {{ colors|tojson|safe }},
+                borderColor: {{ colors|tojson|safe }},
+                borderWidth: 2
+            }]
+        };
+        new Chart(ctxWindDirection, {
+            type: 'polarArea',
+            data: polarData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+    </script>
+
+    <script>
+    document.getElementById('customizeWindRange').addEventListener('change', toggleCustomWindRange);
+    document.getElementById('kiteQuiverForm').addEventListener('submit', handleFormSubmit);
+
+    function toggleCustomWindRange() {
+        var windRangeQuestions = document.getElementById('windRangeQuestions');
+        windRangeQuestions.style.display = this.checked ? 'block' : 'none';
+    }
+
+    function handleFormSubmit(event) {
+        var weight = document.getElementById('riderWeight').value;
+        var customizeWindRangeChecked = document.getElementById('customizeWindRange').checked;
+
+        if (!customizeWindRangeChecked) {
+            setDefaultKiteSizes(weight);
+        }
+    }
+
+    function setDefaultKiteSizes(weight) {
+        var defaultSizes = getDefaultKiteSizesForWeight(weight);
+        document.getElementById('kite_12_16').value = defaultSizes['12-16'];
+        document.getElementById('kite_17_21').value = defaultSizes['17-21'];
+        document.getElementById('kite_22_27').value = defaultSizes['22-27'];
+        document.getElementById('kite_28_33').value = defaultSizes['28-33'];
+        document.getElementById('kite_34_40').value = defaultSizes['34-40'];
+    }
+
+    function getDefaultKiteSizesForWeight(weight) {
+        // Définissez ici la logique pour retourner les tailles d'aile par défaut en fonction du poids
+        // Cet exemple retourne des valeurs fixes, à adapter selon vos besoins
+        if (weight < 50) {
+            return {'12-16': 12, '17-21': 12, '22-27' : 12, '28-33' : 12, '34-40' : 12};
+        } else if (weight >= 50 && weight < 70) {
+            return {'12-16': 13, '17-21': 13, '22-27' : 13, '28-33' : 13, '34-40' : 13};
+        } else {
+            return {'12-16': 14, '17-21': 14, '22-27' : 14, '28-33' : 14, '34-40' : 14};
+        }
+    }
+</script>
+
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

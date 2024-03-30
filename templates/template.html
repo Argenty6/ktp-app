@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Liste des Spots</title>
+</head>
+<body>
+    <h1>Spots de Kite</h1>
+    <ul>
+    {% for spot in spots %}
+        <li>{{ spot.spot }} - {{ spot.pays }} - <a href="/spot/{{ spot.spot_id }}">Voir les détails</a></li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
