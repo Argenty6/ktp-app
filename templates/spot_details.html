@@ -162,6 +162,7 @@
     </script>
 
     <script>
+
     document.getElementById('customizeWindRange').addEventListener('change', toggleCustomWindRange);
     document.getElementById('kiteQuiverForm').addEventListener('submit', handleFormSubmit);
 
@@ -192,10 +193,23 @@
         // Définissez ici la logique pour retourner les tailles d'aile par défaut en fonction du poids
         // Cet exemple retourne des valeurs fixes, à adapter selon vos besoins
         if (weight < 50) {
-            return {'12-16': 12, '17-21': 12, '22-27' : 12, '28-33' : 12, '34-40' : 12};
-        } else if (weight >= 50 && weight < 70) {
-            return {'12-16': 13, '17-21': 13, '22-27' : 13, '28-33' : 13, '34-40' : 13};
-        } else {
+            return {'12-16': 10, '17-21': 8, '22-27' : 6, '28-33' : 4, '34-40' : 4};
+        } else if (weight >= 50 && weight < 60) {
+            return {'12-16': 11, '17-21': 9, '22-27' : 7, '28-33' : 5, '34-40' : 5};
+        } else if (weight >= 60 && weight < 70) {
+            return {'12-16': 12, '17-21': 10, '22-27' : 8, '28-33' : 6, '34-40' : 6};
+        }  else if (weight >= 70 && weight < 80) {
+            return {'12-16': 13, '17-21': 11, '22-27' : 9, '28-33' : 7, '34-40' : 7};
+        } else if (weight >= 80 && weight < 90) {
+            return {'12-16': 14, '17-21': 12, '22-27' : 10, '28-33' : 8, '34-40' : 8};
+        } else if (weight >= 90 && weight < 100) {
+            return {'12-16': 15, '17-21': 13, '22-27' : 10, '28-33' : 9, '34-40' : 7};
+        } else if (weight >= 100 && weight < 110) {
+            return {'12-16': 15, '17-21': 13, '22-27' : 11, '28-33' : 9, '34-40' : 7};
+        } else if (weight >= 110) {
+            return {'12-16': 17, '17-21': 14, '22-27' : 12, '28-33' : 10, '34-40' : 8};
+        }
+        else {
             return {'12-16': 14, '17-21': 14, '22-27' : 14, '28-33' : 14, '34-40' : 14};
         }
     }
