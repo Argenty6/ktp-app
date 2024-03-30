@@ -161,10 +161,49 @@
 
     </script>
 
-    <script>
-
+<script>
     document.getElementById('customizeWindRange').addEventListener('change', toggleCustomWindRange);
     document.getElementById('kiteQuiverForm').addEventListener('submit', handleFormSubmit);
+    document.addEventListener('DOMContentLoaded', function() {
+    // Restaurez les valeurs du formulaire à partir de localStorage au chargement de la page
+    restoreFormValues();
+
+    // Attachez un écouteur d'événements pour enregistrer les données du formulaire dans localStorage lors de la soumission
+    document.getElementById('kiteQuiverForm').addEventListener('submit', saveFormValues);
+});
+
+function saveFormValues(event) {
+    // Enregistrez chaque valeur de champ dans localStorage
+    localStorage.setItem('riderWeight', document.getElementById('riderWeight').value);
+    localStorage.setItem('kite_12_16', document.getElementById('kite_12_16').value);
+    localStorage.setItem('kite_17_21', document.getElementById('kite_17_21').value);
+    localStorage.setItem('kite_22_27', document.getElementById('kite_22_27').value);
+    localStorage.setItem('kite_28_33', document.getElementById('kite_28_33').value);
+    localStorage.setItem('kite_34_40', document.getElementById('kite_34_40').value);
+}
+
+function restoreFormValues() {
+    // Restaurez les valeurs à partir de localStorage s'ils existent
+    if(localStorage.getItem('riderWeight')) {
+        document.getElementById('riderWeight').value = localStorage.getItem('riderWeight');
+    }
+    if(localStorage.getItem('kite_12_16')) {
+        document.getElementById('kite_12_16').value = localStorage.getItem('kite_12_16');
+    }
+    if(localStorage.getItem('kite_17_21')) {
+        document.getElementById('kite_17_21').value = localStorage.getItem('kite_17_21');
+    }
+    if(localStorage.getItem('kite_22_27')) {
+        document.getElementById('kite_22_27').value = localStorage.getItem('kite_22_27');
+    }
+    if(localStorage.getItem('kite_28_33')) {
+        document.getElementById('kite_28_33').value = localStorage.getItem('kite_28_33');
+    }
+    if(localStorage.getItem('kite_34_40')) {
+        document.getElementById('kite_34_40').value = localStorage.getItem('kite_34_40');
+    }
+    // Répétez pour les autres champs
+}
 
     function toggleCustomWindRange() {
         var windRangeQuestions = document.getElementById('windRangeQuestions');
@@ -214,7 +253,6 @@
         }
     }
 </script>
-
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
 </body>
