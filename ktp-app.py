@@ -11,7 +11,7 @@ import logging
 app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = (
-    "postgresql://postgres:P%40stgre428916@localhost:5432/spot_db"
+    f"postgresql://postgres:P%40stgre428916@localhost:5432/spot_db"
 )
 db = SQLAlchemy(app)
 
